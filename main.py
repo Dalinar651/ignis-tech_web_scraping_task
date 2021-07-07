@@ -43,16 +43,20 @@ class shoeScraper:
         temp_list.reverse()
         del temp_list[0]
         del temp_list[-1]
+        placeHolders=["Colour","Style","Fabrication"]
+        temp_dic["Brand"]=soup.find("a",{"class":"loud-light sub-head dampen pdp-brand"}).text.strip()
         for element in temp_list:
-            temp_dic[element.select_one("div",{"class":"product-key"}).text.strip().replace("\n","").split()[0]]=" ".join(element.select_one("div",{"class":"product-value"}).text.strip().replace("\n","").split()[1:])
-        temp_dic["Price"]=soup.find("span",{"class":"price"}).text.strip()
-        temp_dic["Picture"]=soup.find("img",{"class":"bucket-img"})['src']
+            if element.select_one("div",{"class":"product-key"}).text.strip().replace("\n","").split()[0] in placeHolders:
+                temp_dic[element.select_one("div",{"class":"product-key"}).text.strip().replace("\n","").split()[0]]=" ".join(element.select_one("div",{"class":"product-value"}).text.strip().replace("\n","").split()[1:])
+        temp_dic["Price"]=soup.find("span",{"class":"price"}).text.strip()[1:]
+        temp_dic["Picture"]=soup.find("img",{"class":"bucket-img"})['src'].replace("142x206","500x720")
         temp_dic["Age"]=self.gender
         stri=""
         for size in soup.find_all("div",{"class":"sku--item"}):
             if size['class'][1]!="solOut":
                 stri+=size.text.strip()+", "
         temp_dic["size"]=stri
+        temp_dic["Product url"]="https://superbalist.com"+url
         if temp_dic.get("Material"):
             del temp_dic["Material"]
         if temp_dic.get("Flatform"):
@@ -61,7 +65,7 @@ class shoeScraper:
         
     def getCsvFile(self):
         df=pd.DataFrame(self.dataSet)
-        df.to_csv("Output_women_2.csv",index=True)
+        df.to_csv("Output_women_3.csv",index=True)
 
 
 # In[123]:
